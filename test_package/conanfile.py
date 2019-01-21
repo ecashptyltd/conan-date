@@ -64,6 +64,6 @@ class TestPackageConan(ConanFile):
         if tools.cross_building(self.settings):
             self.output.warn("Skipping run of cross-built package")
         else:
-        with tools.environment_append({"TZ": "America/Los_Angeles"}):
-            bin_path = os.path.join("bin", "test_package")
-            self.run(bin_path, run_environment=True)
+            with tools.environment_append({"TZ": "America/Los_Angeles"}):
+                bin_path = os.path.join("bin", "test_package")
+                self.run(bin_path, run_environment=True)
