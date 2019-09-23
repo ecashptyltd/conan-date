@@ -16,7 +16,7 @@ class DateConan(ConanFile):
     author = "Bincrafters <bincrafters@gmail.com>"
     license = "MIT"
     exports = ["LICENSE.md"]
-    exports_sources = ["CMakeLists.txt", "0001-Improved-C-17-support.patch"]
+    exports_sources = ["CMakeLists.txt", "0001-Improved-C-17-support.patch", "do-not-set-cpp-standard.patch"]
     generators = "cmake"
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False], "use_system_tz_db": [True, False],
@@ -50,6 +50,14 @@ class DateConan(ConanFile):
 
         # https://github.com/HowardHinnant/date/pull/373, also https://github.com/HowardHinnant/date/pull/376
         tools.patch(base_path=self._source_subfolder, patch_file="0001-Improved-C-17-support.patch")
+
+        # We don't want to set the C++ standard explicitly in CMakeLists.txt,
+        # as this will cause the tz library to be built with C++17, even though
+        # it looks like it's built with the default for the compiler version.
+        # If later we wish to force building with C++17 we should do it using
+        # the cppstd compiler subsetting, so that the compiler version will
+        # be visible to conan and we don't experience mismatches.
+        tools.patch(base_path=self._source_subfolder, patch_file="do-not-set-cpp-standard.patch")
 
         tools.replace_in_file(os.path.join(self._source_subfolder, 'CMakeLists.txt'),
                               '${CURL_LIBRARIES}', '${CONAN_LIBS}')
